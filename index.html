@@ -2,788 +2,427 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>แซ่บอีหลี v2 - ระบบบัญชีครบวงจร</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>แซ่บอีหลี - ระบบบัญชี</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Thai','Noto Sans KR',sans-serif;background:#FFF3E0;color:#333;min-height:100vh;padding-bottom:74px}
-/* HEADER */
-.hdr{background:linear-gradient(135deg,#B71C1C 0%,#E53935 60%,#FF5722 100%);color:#fff;padding:12px 15px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 3px 14px rgba(0,0,0,0.28)}
-.hdr-l .ttl{font-size:21px;font-weight:800}
-.hdr-l .sub{font-size:10px;opacity:.75;margin-top:2px}
-.hdr-r{display:flex;align-items:center;gap:8px}
-.sync-dot{width:10px;height:10px;border-radius:50%;background:#4CAF50;flex-shrink:0;transition:background .3s}
-.sync-dot.pending{background:#FFC107;animation:pulse 1.5s infinite}
-.sync-dot.error{background:#F44336}
-.sync-dot.syncing{background:#2196F3;animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.lang-btn{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.55);color:#fff;padding:8px 13px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
-.lang-btn:active{transform:scale(.96)}
-/* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #EEE;z-index:200;box-shadow:0 -3px 12px rgba(0,0,0,.1)}
-.ni{flex:1;padding:7px 3px 9px;text-align:center;cursor:pointer;color:#BBB;font-size:10px;font-weight:700;border:none;background:none;transition:color .2s}
-.ni.active{color:#E53935}
-.ni-ic{font-size:23px;display:block;margin-bottom:1px}
-/* PAGES */
-.pg{display:none;padding:13px 13px 4px;animation:fi .18s ease}
-.pg.active{display:block}
-@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-/* CARDS */
-.card{background:#fff;border-radius:17px;padding:17px;margin-bottom:13px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.ct{font-size:14px;font-weight:800;color:#C62828;margin-bottom:13px;padding-bottom:9px;border-bottom:2px solid #FFCCBC}
-/* FORMS */
-.fg{margin-bottom:12px}
-label{display:block;font-size:12px;font-weight:700;color:#666;margin-bottom:5px}
-input[type=text],input[type=number],input[type=date],input[type=datetime-local],select,textarea{width:100%;padding:12px 13px;border:2px solid #E8E8E8;border-radius:11px;font-size:15px;color:#333;background:#FAFAFA;outline:none;-webkit-appearance:none;transition:border-color .2s,background .2s}
-input:focus,select:focus,textarea:focus{border-color:#E53935;background:#fff;box-shadow:0 0 0 3px rgba(229,57,53,.1)}
-textarea{resize:vertical;min-height:72px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.iw{position:relative}
-.iw input{padding-right:40px}
-.iu{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#AAA;font-size:12px;font-weight:700;pointer-events:none}
-.sdiv{font-size:11px;font-weight:800;color:#E53935;margin:13px 0 9px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.5px}
-.sdiv::after{content:'';flex:1;height:1px;background:linear-gradient(to right,#FFCCBC,transparent)}
-/* BUTTONS */
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .1s;letter-spacing:.2px}
-.btn:active{transform:scale(.975)}
-.bg{background:linear-gradient(135deg,#43A047,#2E7D32);color:#fff;box-shadow:0 4px 12px rgba(46,125,50,.28)}
-.bo{background:linear-gradient(135deg,#FB8C00,#E65100);color:#fff;box-shadow:0 4px 12px rgba(230,81,0,.28)}
-.br{background:linear-gradient(135deg,#E53935,#B71C1C);color:#fff;box-shadow:0 4px 12px rgba(183,28,28,.28)}
-.bor{background:#fff;border:2px solid #E53935;color:#E53935;font-weight:700}
-.bbl{background:linear-gradient(135deg,#1E88E5,#0D47A1);color:#fff;box-shadow:0 4px 12px rgba(13,71,161,.28)}
-.btn-sm{padding:9px 16px;width:auto;font-size:13px}
-/* IMG UPLOAD */
-.iua{border:2px dashed #CCC;border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:#FAFAFA;transition:all .2s}
-.iua:active,.iua.has{border-color:#43A047;background:#F1F8E9}
-.iua img{max-width:100%;max-height:170px;border-radius:9px;margin-top:9px;display:none}
-#biinput{display:none}
-/* RECORDS */
-.ri{background:#FAFAFA;border-radius:12px;padding:12px 38px 12px 13px;margin-bottom:8px;border-left:4px solid #43A047;position:relative}
-.ri.e{border-left-color:#FB8C00}
-.rd{font-size:11px;color:#AAA;margin-bottom:2px}
-.ra{font-size:19px;font-weight:800;color:#2E7D32}
-.ra.e{color:#E65100}
-.rm{font-size:12px;color:#777;margin-top:3px;line-height:1.5}
-.rdel{position:absolute;top:8px;right:7px;background:none;border:none;color:#DDD;font-size:19px;cursor:pointer;padding:3px 6px}
-.rdel:active{color:#E53935}
-.rimg{width:60px;height:60px;object-fit:cover;border-radius:8px;margin-top:7px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.chip{display:inline-block;padding:2px 8px;border-radius:18px;font-size:11px;font-weight:700;background:#FFF3E0;color:#E65100}
-.chip.i{background:#E8F5E9;color:#2E7D32}
-.synced-ic{font-size:11px;color:#4CAF50;margin-left:6px}
-.pending-ic{font-size:11px;color:#FFC107;margin-left:6px}
-/* SUMMARY */
-.pb{width:100%;text-align:center;padding:18px;border-radius:17px;margin-bottom:13px}
-.pb.pos{background:linear-gradient(135deg,#E8F5E9,#C8E6C9)}
-.pb.neg{background:linear-gradient(135deg,#FFEBEE,#FFCDD2)}
-.pvlb{font-size:12px;color:#666;margin-bottom:5px}
-.pv{font-size:34px;font-weight:900;letter-spacing:-1px}
-.pv.pos{color:#1B5E20}
-.pv.neg{color:#B71C1C}
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
-.sc{background:#fff;border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.sl{font-size:10px;color:#999;margin-bottom:3px;font-weight:700}
-.sv{font-size:19px;font-weight:900}
-.sv.ic{color:#2E7D32}
-.sv.ec{color:#C62828}
-.sunit{font-size:10px;color:#BBB;margin-top:1px}
-.ptabs{display:flex;background:#F5F5F5;border-radius:12px;padding:3px;margin-bottom:11px}
-.ptab{flex:1;padding:9px 5px;text-align:center;border:none;background:none;border-radius:10px;font-size:12px;font-weight:700;color:#999;cursor:pointer;transition:all .2s}
-.ptab.active{background:#E53935;color:#fff;box-shadow:0 2px 8px rgba(229,57,53,.3)}
-.bki{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F5F5F5}
-.bki:last-child{border-bottom:none}
-.bkl{font-size:13px;color:#555}
-.bkv{font-size:13px;font-weight:800}
-.bkbar{height:3px;background:#F5F5F5;border-radius:2px;margin-top:3px;overflow:hidden}
-.bkbf{height:100%;border-radius:2px;transition:width .5s}
-.hbg{font-size:11px;color:#E65100;font-weight:700;background:#FFF3E0;border:1px solid #FFCCBC;border-radius:10px;padding:8px 12px;margin-bottom:11px;text-align:center}
-.msel-w{display:flex;gap:8px;margin-bottom:11px}
-.msel-w select{flex:1}
-.rdisp{font-size:11px;color:#999;text-align:center;margin-bottom:10px;font-weight:600}
-/* SETTINGS */
-.setup-banner{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:16px;margin-bottom:13px;border:1px solid #90CAF9}
-.setup-banner .sb-ic{font-size:32px;margin-bottom:8px}
-.setup-banner p{font-size:13px;color:#0D47A1;line-height:1.6}
-.api-status{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:10px;margin-bottom:11px;font-size:13px;font-weight:700}
-.api-status.ok{background:#E8F5E9;color:#2E7D32}
-.api-status.no{background:#FFF3E0;color:#E65100}
-.pending-cnt{background:#FFF3E0;border-radius:10px;padding:10px 13px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between}
-/* TOAST */
-.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(33,33,33,.92);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:700;opacity:0;transition:all .22s;z-index:999;white-space:nowrap;pointer-events:none}
+:root{--red:#C62828;--green:#2E7D32;--blue:#1565C0;--bg:#F7F3F0;--card:#fff;--text:#1A1A1A;--sub:#666;--border:#E8E0DA;--shadow:0 2px 12px rgba(0,0,0,0.08)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans Thai','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:100px}
+.header{background:linear-gradient(135deg,#8B0000,#C62828,#E53935);color:#fff;padding:20px 16px 16px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(198,40,40,0.4)}
+.header-top{display:flex;align-items:center;justify-content:center;position:relative}
+.header h1{font-size:22px;font-weight:800}
+.header-sub{font-size:12px;opacity:.8;margin-top:4px}
+.lang-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600}
+.tabs{display:flex;background:#fff;position:sticky;top:80px;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.tab{flex:1;padding:12px 4px;text-align:center;font-size:11px;font-weight:700;color:#999;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tab-icon{font-size:22px}
+.tab.active{color:var(--red);border-bottom-color:var(--red)}
+.page{display:none;padding:16px;max-width:500px;margin:0 auto}
+.page.active{display:block}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid var(--border)}
+.card-icon{font-size:28px}
+.card-title{font-size:16px;font-weight:800}
+.card-subtitle{font-size:12px;color:var(--sub);margin-top:2px}
+.field{margin-bottom:14px}
+.field label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:7px;text-transform:uppercase;letter-spacing:.3px}
+.field input,.field select{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:16px;background:#fafafa;color:var(--text);transition:all .2s;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus{outline:none;border-color:var(--red);background:#fff;box-shadow:0 0 0 3px rgba(198,40,40,.1)}
+.field input[type=number]{-moz-appearance:textfield}
+.field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.won-wrap{position:relative}
+.won-sym{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:#888;pointer-events:none}
+.won-wrap input{padding-left:32px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sec-label{font-size:11px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ch-card{background:#fafafa;border:2px solid var(--border);border-radius:12px;padding:12px 10px;transition:border-color .2s}
+.ch-card:focus-within{border-color:var(--red);background:#fff}
+.ch-label{font-size:11px;font-weight:700;color:var(--sub);display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.ch-input{border:none;background:transparent;font-size:18px;font-weight:700;color:var(--text);width:100%;padding:0}
+.ch-input:focus{outline:none}
+.ch-input::placeholder{color:#ccc;font-weight:400;font-size:16px}
+.ch-won{font-size:10px;color:#bbb;margin-top:3px}
+.total-card{background:linear-gradient(135deg,#1B5E20,#2E7D32);border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 20px rgba(46,125,50,.35);color:#fff;text-align:center}
+.total-label{font-size:13px;opacity:.85;font-weight:600}
+.total-amount{font-size:38px;font-weight:800;margin-top:6px;letter-spacing:-1px}
+.btn{width:100%;padding:18px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#C62828,#E53935);color:#fff;box-shadow:0 4px 16px rgba(198,40,40,.4)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary:disabled{background:#ddd;color:#aaa;box-shadow:none;transform:none}
+.img-upload{border:2.5px dashed var(--border);border-radius:14px;padding:24px 16px;text-align:center;cursor:pointer;background:#fafafa;transition:all .2s}
+.img-upload:active{border-color:var(--red);background:#fff5f5}
+.img-upload input{display:none}
+.img-icon{font-size:36px;margin-bottom:8px}
+.img-text{font-size:14px;color:var(--sub);font-weight:600}
+.img-sub2{font-size:11px;color:#bbb;margin-top:4px}
+.img-preview{width:100%;max-height:200px;object-fit:contain;border-radius:10px;margin-top:12px;display:none}
+.img-remove{display:none;margin-top:8px;background:#fff;border:1.5px solid #ddd;border-radius:8px;padding:8px 14px;font-size:13px;color:#888;cursor:pointer;width:100%}
+.hi-item{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;gap:12px;align-items:center}
+.hi-ico{font-size:26px;min-width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.hi-ico.inc{background:#E8F5E9}
+.hi-ico.exp{background:#E3F2FD}
+.hi-body{flex:1;min-width:0}
+.hi-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-meta{font-size:12px;color:var(--sub);margin-top:2px}
+.hi-right{text-align:right;flex-shrink:0}
+.hi-amount{font-size:16px;font-weight:800}
+.hi-amount.inc{color:var(--green)}
+.hi-amount.exp{color:var(--blue)}
+.hi-time{font-size:10px;color:#bbb;margin-top:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.badge.inc{background:#E8F5E9;color:var(--green)}
+.badge.exp{background:#E3F2FD;color:var(--blue)}
+.empty-state{text-align:center;padding:40px 20px;color:#ccc}
+.empty-state .ei{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:14px 24px;border-radius:14px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* MODAL */
-.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;backdrop-filter:blur(4px)}
-.mov.show{display:flex}
-.modal{background:#fff;border-radius:20px 20px 0 0;padding:22px 18px 30px;width:100%;max-height:88vh;overflow-y:auto;animation:su .22s ease}
-@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mt{font-size:17px;font-weight:800;margin-bottom:8px;color:#333}
-.mb{font-size:13px;color:#666;margin-bottom:20px;line-height:1.65}
-.mbtns{display:flex;gap:9px}
-.mbtns .btn{flex:1}
-/* IMG VIEWER */
-.ivov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:400;align-items:center;justify-content:center;padding:20px}
-.ivov.show{display:flex}
-.ivov img{max-width:100%;max-height:90vh;border-radius:10px}
-.ivcl{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:22px;width:42px;height:42px;border-radius:50%;cursor:pointer}
-/* EMPTY */
-.empty{text-align:center;padding:28px 14px;color:#CCC}
-.empty .eic{font-size:40px;margin-bottom:8px}
-.empty .etx{font-size:13px;font-weight:700}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+.toast.warning{background:#E65100}
+.loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:998;align-items:center;justify-content:center;flex-direction:column;color:#fff;gap:16px;backdrop-filter:blur(4px)}
+.loading.show{display:flex}
+.spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:16px;font-weight:600}
+.sec-head{font-size:14px;font-weight:800;margin:20px 0 12px}
 </style>
 </head>
 <body>
 
-<div class="hdr">
-  <div class="hdr-l">
-    <div class="ttl">🌶️ แซ่บอีหลี</div>
-    <div class="sub" id="mbadge">...</div>
+<div class="header">
+  <div class="header-top">
+    <h1>🌶️ แซ่บอีหลี</h1>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">한국어</button>
   </div>
-  <div class="hdr-r">
-    <div class="sync-dot" id="sdot" title="sync status"></div>
-    <button class="lang-btn" id="lbtn" onclick="toggleLang()">한국어</button>
+  <div class="header-sub">ระบบบันทึกบัญชีร้าน • 매장 회계 시스템</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('income')" id="tab-income">
+    <span class="tab-icon">💰</span><span id="tab-inc-label">รายรับ</span>
+  </div>
+  <div class="tab" onclick="switchTab('expense')" id="tab-expense">
+    <span class="tab-icon">🛒</span><span id="tab-exp-label">รายจ่าย</span>
+  </div>
+  <div class="tab" onclick="switchTab('history')" id="tab-history">
+    <span class="tab-icon">📋</span><span id="tab-his-label">ประวัติ</span>
   </div>
 </div>
 
-<!-- ========== PAGE: INCOME ========== -->
-<div id="pg-income" class="pg active">
+<!-- INCOME -->
+<div class="page active" id="page-income">
   <div class="card">
-    <div class="ct" data-i18n="income_title">📥 บันทึกรายรับ</div>
-    <div class="fg"><label data-i18n="date">วันที่</label><input type="date" id="id"></div>
-    <div class="fg"><label data-i18n="total_sales">ยอดขายรวม</label><div class="iw"><input type="number" id="it" placeholder="0" inputmode="decimal"><span class="iu">₩</span></div></div>
-    <div class="sdiv" data-i18n="channels">แยกช่องทาง</div>
-    <div class="g2">
-      <div class="fg"><label data-i18n="cash">เงินสด</label><input type="number" id="ic-cash" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"><label data-i18n="credit">บัตรเครดิต</label><input type="number" id="ic-credit" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"><label>Baemin 배민</label><input type="number" id="ic-baemin" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"><label>Yogiyo 요기요</label><input type="number" id="ic-yogiyo" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"><label>Coupang Eats</label><input type="number" id="ic-coupang" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"><label data-i18n="other">อื่นๆ</label><input type="number" id="ic-other" placeholder="0" inputmode="decimal"></div>
+    <div class="card-header">
+      <div class="card-icon">💰</div>
+      <div><div class="card-title" id="inc-title">บันทึกรายรับประจำวัน</div><div class="card-subtitle" id="inc-sub">กรอกยอดขายแต่ละช่องทาง</div></div>
     </div>
-    <div class="g2">
-      <div class="fg"><label data-i18n="tax">ภาษี (₩)</label><input type="number" id="i-tax" placeholder="0" inputmode="decimal"></div>
-      <div class="fg"></div>
+    <div class="field">
+      <label>📅 <span id="lbl-date">วันที่</span></label>
+      <input type="date" id="income-date">
     </div>
-    <div class="g2">
-      <div class="fg"><label data-i18n="bills">จำนวนบิล</label><input type="number" id="i-bills" placeholder="0" inputmode="numeric"></div>
-      <div class="fg"><label data-i18n="customers">จำนวนลูกค้า</label><input type="number" id="i-cust" placeholder="0" inputmode="numeric"></div>
+    <div class="sec-label" id="lbl-channels">ช่องทางการขาย</div>
+    <div class="ch-grid">
+      <div class="ch-card"><div class="ch-label">💵 <span id="lbl-cash">เงินสด</span></div><input class="ch-input" type="number" id="inc-cash" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
+      <div class="ch-card"><div class="ch-label">💳 <span id="lbl-credit">บัตร</span></div><input class="ch-input" type="number" id="inc-credit" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
+      <div class="ch-card"><div class="ch-label">🟢 Baemin</div><input class="ch-input" type="number" id="inc-baemin" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
+      <div class="ch-card"><div class="ch-label">🔵 Yogiyo</div><input class="ch-input" type="number" id="inc-yogiyo" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
+      <div class="ch-card"><div class="ch-label">🟡 Coupang</div><input class="ch-input" type="number" id="inc-coupang" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
+      <div class="ch-card"><div class="ch-label">📦 <span id="lbl-other">อื่นๆ</span></div><input class="ch-input" type="number" id="inc-other" placeholder="0" min="0" oninput="calcTotal()"><div class="ch-won">₩ วอน</div></div>
     </div>
-    <button class="btn bg" onclick="saveIncome()"><span data-i18n="save_income">💾 บันทึกรายรับ</span></button>
+    <div class="sec-label" id="lbl-extra">ข้อมูลเพิ่มเติม</div>
+    <div class="grid2">
+      <div class="field"><label>🧾 <span id="lbl-tax">ภาษี VAT</span></label><div class="won-wrap"><span class="won-sym">₩</span><input type="number" id="inc-tax" placeholder="0" min="0" oninput="calcTotal()"></div></div>
+      <div class="field"><label>🧾 <span id="lbl-bills">จำนวนบิล</span></label><input type="number" id="inc-bills" placeholder="0" min="0"></div>
+    </div>
+    <div class="field"><label>👥 <span id="lbl-customers">จำนวนลูกค้า</span></label><input type="number" id="inc-customers" placeholder="0" min="0"></div>
   </div>
-  <div class="card">
-    <div class="ct" data-i18n="recent_income">📋 รายรับล่าสุด</div>
-    <div id="inc-list"></div>
+  <div class="total-card">
+    <div class="total-label" id="lbl-total">💰 ยอดรวมทั้งหมด</div>
+    <div class="total-amount">₩ <span id="total-display">0</span></div>
   </div>
+  <button class="btn btn-primary" onclick="submitIncome()" id="btn-inc">✅ &nbsp;<span id="btn-inc-label">บันทึกรายรับ</span></button>
+  <div class="sec-head" id="lbl-recent-inc">📝 รายรับที่บันทึกแล้ว</div>
+  <div id="income-list"><div class="empty-state"><div class="ei">📭</div><p id="empty-inc">ยังไม่มีรายการ</p></div></div>
 </div>
 
-<!-- ========== PAGE: EXPENSE ========== -->
-<div id="pg-expense" class="pg">
+<!-- EXPENSE -->
+<div class="page" id="page-expense">
   <div class="card">
-    <div class="ct" data-i18n="expense_title">📤 บันทึกรายจ่าย</div>
-    <div class="fg"><label data-i18n="datetime">วันที่และเวลา</label><input type="datetime-local" id="e-dt"></div>
-    <div class="fg"><label data-i18n="buyer">ชื่อผู้ซื้อ</label><input type="text" id="e-buyer" data-iph="buyer_ph"></div>
-    <div class="fg">
-      <label data-i18n="category">หมวดหมู่</label>
-      <select id="e-cat">
-        <option value="kitchen" data-i18n="cat_kitchen">วัตถุดิบครัว 🥩</option>
-        <option value="bar" data-i18n="cat_bar">วัตถุดิบบาร์ 🍺</option>
-        <option value="labor" data-i18n="cat_labor">ค่าแรง 👷</option>
-        <option value="utilities" data-i18n="cat_utilities">ค่าน้ำไฟ 💡</option>
-        <option value="delivery" data-i18n="cat_delivery">ค่าแพลตฟอร์ม Delivery 📱</option>
-        <option value="other" data-i18n="cat_other">อื่นๆ</option>
+    <div class="card-header">
+      <div class="card-icon">🛒</div>
+      <div><div class="card-title" id="exp-title">บันทึกรายจ่าย</div><div class="card-subtitle" id="exp-sub">กรอกทุกครั้งที่มีการซื้อของ</div></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>📅 <span id="lbl-exp-date">วันที่</span></label><input type="date" id="exp-date"></div>
+      <div class="field"><label>⏰ <span id="lbl-exp-time">เวลา</span></label><input type="time" id="exp-time"></div>
+    </div>
+    <div class="field"><label>👤 <span id="lbl-buyer">ผู้ซื้อ</span></label><input type="text" id="exp-buyer" placeholder="ชื่อคนที่ซื้อของ"></div>
+    <div class="field">
+      <label>📂 <span id="lbl-cat">หมวดหมู่</span></label>
+      <select id="exp-cat">
+        <option value="">-- เลือกหมวดหมู่ --</option>
+        <option value="วัตถุดิบครัว">🥩 วัตถุดิบครัว</option>
+        <option value="วัตถุดิบเครื่องดื่ม">🥤 วัตถุดิบเครื่องดื่ม</option>
+        <option value="ค่าแรง">👷 ค่าแรง</option>
+        <option value="ค่าน้ำไฟ">💡 ค่าน้ำไฟ</option>
+        <option value="ค่าแพลตฟอร์ม Delivery">🛵 ค่าแพลตฟอร์ม Delivery</option>
+        <option value="อุปกรณ์/ซ่อมแซม">🔧 อุปกรณ์/ซ่อมแซม</option>
+        <option value="อื่นๆ">📦 อื่นๆ</option>
       </select>
     </div>
-    <div class="fg"><label data-i18n="details">รายละเอียด</label><textarea id="e-det" data-iph="details_ph"></textarea></div>
-    <div class="fg"><label data-i18n="amount">จำนวนเงิน</label><div class="iw"><input type="number" id="e-amt" placeholder="0" inputmode="decimal"><span class="iu">₩</span></div></div>
-    <div class="fg">
-      <label data-i18n="bill_img">รูปบิล (บีบอัดอัตโนมัติ)</label>
-      <div class="iua" id="iua" onclick="document.getElementById('biinput').click()">
-        <div style="font-size:26px">📷</div>
-        <div id="iutxt" style="font-size:13px;color:#AAA;margin-top:4px" data-i18n="tap_upload">แตะเพื่ออัปโหลด</div>
-        <img id="ipreview" alt="preview">
+    <div class="field"><label>📝 <span id="lbl-details">รายละเอียด</span></label><input type="text" id="exp-details" placeholder="เช่น หมูสามชั้น 2kg..."></div>
+    <div class="field"><label>💰 <span id="lbl-amount">จำนวนเงิน (วอน)</span></label><div class="won-wrap"><span class="won-sym">₩</span><input type="number" id="exp-amount" placeholder="0" min="0"></div></div>
+    <div class="field">
+      <label>📸 <span id="lbl-img">รูปบิล</span> <span style="font-weight:400;color:#bbb;font-size:11px" id="lbl-opt">(ไม่บังคับ)</span></label>
+      <div class="img-upload" onclick="document.getElementById('bill-img').click()">
+        <input type="file" id="bill-img" accept="image/*" capture="environment" onchange="previewImg(this)">
+        <div id="img-ph">
+          <div class="img-icon">📷</div>
+          <div class="img-text" id="lbl-tap">แตะเพื่อถ่ายรูปหรือเลือกรูปบิล</div>
+          <div class="img-sub2" id="lbl-tap-sub">รูปจะถูกบีบอัดและบันทึกลง Google Drive อัตโนมัติ</div>
+        </div>
+        <img id="img-preview" class="img-preview">
       </div>
-      <input type="file" id="biinput" accept="image/*" onchange="handleImg(event)">
+      <button class="img-remove" id="img-remove-btn" onclick="removeImg()">✕ <span id="lbl-remove">ลบรูป</span></button>
     </div>
-    <button class="btn bo" onclick="saveExpense()"><span data-i18n="save_expense">💾 บันทึกรายจ่าย</span></button>
   </div>
-  <div class="card">
-    <div class="ct" data-i18n="recent_expense">📋 รายจ่ายล่าสุด</div>
-    <div id="exp-list"></div>
-  </div>
+  <button class="btn btn-primary" onclick="submitExpense()" id="btn-exp">✅ &nbsp;<span id="btn-exp-label">บันทึกรายจ่าย</span></button>
+  <div class="sec-head" id="lbl-recent-exp">📝 รายจ่ายที่บันทึกแล้ว</div>
+  <div id="expense-list"><div class="empty-state"><div class="ei">📭</div><p id="empty-exp">ยังไม่มีรายการ</p></div></div>
 </div>
 
-<!-- ========== PAGE: SUMMARY ========== -->
-<div id="pg-summary" class="pg">
+<!-- HISTORY -->
+<div class="page" id="page-history">
   <div class="card">
-    <div class="ct" data-i18n="period_title">📅 เลือกช่วงเวลา</div>
-    <div class="msel-w"><select id="msel" onchange="renderSummary()"></select></div>
-    <div class="ptabs">
-      <button class="ptab" data-p="day" onclick="setPeriod('day')" data-i18n="daily">รายวัน</button>
-      <button class="ptab" data-p="week" onclick="setPeriod('week')" data-i18n="weekly">รายอาทิตย์</button>
-      <button class="ptab active" data-p="month" onclick="setPeriod('month')" data-i18n="monthly">รายเดือน</button>
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div><div class="card-title" id="his-title">ประวัติการบันทึก</div><div class="card-subtitle" id="his-sub">รายการที่บันทึกในเซสชันนี้</div></div>
     </div>
-    <div class="rdisp" id="rdisp"></div>
   </div>
-  <div id="sum-content"></div>
-  <div class="card" id="close-card" style="background:linear-gradient(135deg,#FFF8F0,#FFF3E0);border:1px solid #FFCCBC">
-    <div class="ct" data-i18n="close_title">🔒 ปิดเดือน</div>
-    <p style="font-size:13px;color:#777;margin-bottom:13px;line-height:1.6" data-i18n="close_desc">ปิดเดือนปัจจุบันและเริ่มต้นเดือนใหม่ ข้อมูลเก่าจะเก็บไว้ดูย้อนหลังได้</p>
-    <button class="btn bor" onclick="confirmClose()"><span data-i18n="close_btn">🔒 ปิดเดือนนี้</span></button>
-  </div>
+  <div id="history-list"><div class="empty-state"><div class="ei">📭</div><p>ยังไม่มีรายการ</p></div></div>
 </div>
 
-<!-- ========== PAGE: SETTINGS ========== -->
-<div id="pg-settings" class="pg">
-  <div class="card">
-    <div class="ct" data-i18n="settings_title">⚙️ ตั้งค่า Google Sheets</div>
-    <div class="setup-banner">
-      <div class="sb-ic">📊</div>
-      <p data-i18n="setup_desc">วาง URL ของ Google Apps Script เพื่อซิงค์ข้อมูลไปยัง Google Sheets อัตโนมัติ หากไม่มี URL ระบบจะบันทึกเฉพาะในเครื่อง</p>
-    </div>
-    <div id="api-status-bar" class="api-status no">
-      <span>⚠️</span><span id="api-status-txt" data-i18n="no_api">ยังไม่ได้ตั้งค่า API URL</span>
-    </div>
-    <div class="fg">
-      <label data-i18n="api_url_label">Google Apps Script Web App URL</label>
-      <input type="text" id="api-url-inp" placeholder="https://script.google.com/macros/s/..." style="font-size:13px">
-    </div>
-    <div style="display:flex;gap:9px;margin-bottom:13px">
-      <button class="btn bbl" onclick="saveApiUrl()"><span data-i18n="save_url">💾 บันทึก URL</span></button>
-      <button class="btn bor btn-sm" style="width:auto;flex-shrink:0" onclick="testApi()"><span data-i18n="test_btn">🔗 ทดสอบ</span></button>
-    </div>
-    <div class="pending-cnt" id="pending-cnt-box">
-      <div>
-        <div style="font-size:13px;font-weight:800;color:#333" data-i18n="pending_label">รอซิงค์</div>
-        <div style="font-size:12px;color:#AAA" id="pending-cnt-txt">0 รายการ</div>
-      </div>
-      <button class="btn bbl btn-sm" onclick="syncAll()"><span data-i18n="sync_all">🔄 ซิงค์ทั้งหมด</span></button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ct" data-i18n="month_mgmt">📁 จัดการเดือน</div>
-    <p style="font-size:12px;color:#AAA;margin-bottom:11px" data-i18n="month_mgmt_desc">เดือนที่ใช้งานอยู่</p>
-    <div style="font-size:20px;font-weight:800;color:#E53935;margin-bottom:13px" id="active-month-disp">...</div>
-    <button class="btn bor" onclick="confirmClose()"><span data-i18n="close_btn">🔒 ปิดเดือนนี้</span></button>
-  </div>
-  <div class="card">
-    <div class="ct" data-i18n="danger_zone">⚠️ ล้างข้อมูล</div>
-    <p style="font-size:12px;color:#AAA;margin-bottom:11px" data-i18n="clear_desc">ล้างข้อมูลทั้งหมดในเครื่อง (ข้อมูลใน Sheets ยังคงอยู่)</p>
-    <button class="btn" style="background:#fff;border:2px solid #EEE;color:#AAA" onclick="confirmClearAll()"><span data-i18n="clear_all">🗑️ ล้างข้อมูลทั้งหมด</span></button>
-  </div>
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bnav">
-  <button class="ni active" data-pg="income" onclick="showPage('income')"><span class="ni-ic">💚</span><span data-i18n="income">รายรับ</span></button>
-  <button class="ni" data-pg="expense" onclick="showPage('expense')"><span class="ni-ic">🧾</span><span data-i18n="expense">รายจ่าย</span></button>
-  <button class="ni" data-pg="summary" onclick="showPage('summary')"><span class="ni-ic">📊</span><span data-i18n="summary">สรุป</span></button>
-  <button class="ni" data-pg="settings" onclick="showPage('settings')"><span class="ni-ic">⚙️</span><span data-i18n="settings">ตั้งค่า</span></button>
-</div>
-
+<div class="loading" id="loading"><div class="spinner"></div><div class="loading-text" id="loading-text">กำลังบันทึก...</div></div>
 <div class="toast" id="toast"></div>
 
-<div class="mov" id="mov" onclick="closeModal()">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="mt" id="m-title"></div>
-    <div class="mb" id="m-body"></div>
-    <div class="mbtns">
-      <button class="btn bor" onclick="closeModal()" data-i18n="cancel">ยกเลิก</button>
-      <button class="btn br" id="m-ok" data-i18n="confirm">ยืนยัน</button>
-    </div>
-  </div>
-</div>
-
-<div class="ivov" id="ivov" onclick="closeIV()">
-  <button class="ivcl" onclick="closeIV()">✕</button>
-  <img id="ivimg" src="" alt="">
-</div>
-
 <script>
-// ==================== I18N ====================
-const TR={
-  th:{
-    income_title:'📥 บันทึกรายรับ',expense_title:'📤 บันทึกรายจ่าย',
-    date:'วันที่',total_sales:'ยอดขายรวม (₩)',channels:'แยกช่องทาง',
-    cash:'เงินสด',credit:'บัตรเครดิต',other:'อื่นๆ',tax:'ภาษี (₩)',
-    bills:'จำนวนบิล',customers:'จำนวนลูกค้า',
-    save_income:'💾 บันทึกรายรับ',save_expense:'💾 บันทึกรายจ่าย',
-    recent_income:'📋 รายรับล่าสุด',recent_expense:'📋 รายจ่ายล่าสุด',
-    datetime:'วันที่และเวลา',buyer:'ชื่อผู้ซื้อ',buyer_ph:'ชื่อพนักงาน / ผู้ซื้อ',
-    category:'หมวดหมู่',
-    cat_kitchen:'วัตถุดิบครัว 🥩',cat_bar:'วัตถุดิบบาร์ 🍺',cat_labor:'ค่าแรง 👷',
-    cat_utilities:'ค่าน้ำไฟ 💡',cat_delivery:'ค่าแพลตฟอร์ม Delivery 📱',cat_other:'อื่นๆ',
-    details:'รายละเอียด',details_ph:'รายละเอียดสินค้า / บริการ',
-    amount:'จำนวนเงิน (₩)',bill_img:'รูปบิล (บีบอัดอัตโนมัติ)',tap_upload:'แตะเพื่ออัปโหลด',
-    income:'รายรับ',expense:'รายจ่าย',summary:'สรุป',settings:'ตั้งค่า',
-    period_title:'📅 เลือกช่วงเวลา',daily:'รายวัน',weekly:'รายอาทิตย์',monthly:'รายเดือน',
-    total_income:'รายรับรวม',total_expense:'รายจ่ายรวม',
-    income_by_ch:'📊 รายรับแต่ละช่องทาง',expense_by_cat:'📊 รายจ่ายแต่ละหมวด',
-    close_title:'🔒 ปิดเดือน',close_desc:'ปิดเดือนปัจจุบันและเริ่มต้นเดือนใหม่ ข้อมูลเก่าจะเก็บไว้ดูย้อนหลังได้',close_btn:'🔒 ปิดเดือนนี้',
-    settings_title:'⚙️ ตั้งค่า Google Sheets',
-    setup_desc:'วาง URL ของ Google Apps Script เพื่อซิงค์ข้อมูลไปยัง Google Sheets อัตโนมัติ หากไม่มี URL ระบบจะบันทึกเฉพาะในเครื่อง',
-    no_api:'ยังไม่ได้ตั้งค่า API URL',api_ok:'เชื่อมต่อ Google Sheets แล้ว ✅',
-    api_url_label:'Google Apps Script Web App URL',save_url:'💾 บันทึก URL',test_btn:'🔗 ทดสอบ',
-    pending_label:'รอซิงค์',sync_all:'🔄 ซิงค์ทั้งหมด',
-    month_mgmt:'📁 จัดการเดือน',month_mgmt_desc:'เดือนที่ใช้งานอยู่',
-    danger_zone:'⚠️ ล้างข้อมูล',clear_desc:'ล้างข้อมูลทั้งหมดในเครื่อง (ข้อมูลใน Sheets ยังคงอยู่)',clear_all:'🗑️ ล้างข้อมูลทั้งหมด',
-    saved:'บันทึกสำเร็จ ✅',deleted:'ลบแล้ว',synced_ok:'ซิงค์ไป Sheets สำเร็จ ✅',
-    sync_failed:'ซิงค์ไม่สำเร็จ — บันทึกไว้รอซิงค์ใหม่',
-    confirm_close:'ยืนยันปิดเดือน?',confirm_close_body:'ข้อมูลเดือนนี้จะถูกเก็บในประวัติ และเริ่มต้นเดือนใหม่',
-    confirm_delete:'ลบรายการนี้?',confirm_delete_body:'รายการนี้จะถูกลบถาวร',
-    confirm_clear:'ล้างข้อมูลทั้งหมด?',confirm_clear_body:'ข้อมูลทั้งหมดในเครื่องจะถูกลบ (ข้อมูลใน Sheets ยังคงอยู่)',
-    cancel:'ยกเลิก',confirm:'ยืนยัน',month_closed:'ปิดเดือนสำเร็จ ✅',
-    cur_month:'เดือนปัจจุบัน',history_lbl:'ดูข้อมูลย้อนหลัง',
-    no_income:'ยังไม่มีรายรับ',no_expense:'ยังไม่มีรายจ่าย',no_data:'ไม่มีข้อมูล',
-    img_ok:'บีบอัดรูปสำเร็จ ✅',
-    profit_lbl:'กำไรสุทธิ',loss_lbl:'ขาดทุน',
-    active_month_lbl:'เดือนที่ใช้งาน',
-    test_ok:'เชื่อมต่อสำเร็จ ✅',test_fail:'เชื่อมต่อไม่ได้ — ตรวจสอบ URL อีกครั้ง',
-    sync_done:'ซิงค์ทั้งหมดสำเร็จ ✅',
-    bills_u:'บิล',cust_u:'ลูกค้า',
-    cleared:'ล้างข้อมูลสำเร็จ',
-  },
-  ko:{
-    income_title:'📥 수입 기록',expense_title:'📤 지출 기록',
-    date:'날짜',total_sales:'총 매출 (₩)',channels:'채널별 분류',
-    cash:'현금',credit:'신용카드',other:'기타',tax:'세금 (₩)',
-    bills:'영수증 수',customers:'고객 수',
-    save_income:'💾 수입 저장',save_expense:'💾 지출 저장',
-    recent_income:'📋 최근 수입',recent_expense:'📋 최근 지출',
-    datetime:'날짜 및 시간',buyer:'구매자 이름',buyer_ph:'직원 / 구매자 이름',
-    category:'카테고리',
-    cat_kitchen:'주방 재료 🥩',cat_bar:'바 재료 🍺',cat_labor:'인건비 👷',
-    cat_utilities:'수도/전기세 💡',cat_delivery:'배달 플랫폼 비용 📱',cat_other:'기타',
-    details:'상세 내용',details_ph:'상품 / 서비스 상세 내용',
-    amount:'금액 (₩)',bill_img:'영수증 사진 (자동 압축)',tap_upload:'사진 업로드',
-    income:'수입',expense:'지출',summary:'요약',settings:'설정',
-    period_title:'📅 기간 선택',daily:'일별',weekly:'주별',monthly:'월별',
-    total_income:'총 수입',total_expense:'총 지출',
-    income_by_ch:'📊 채널별 수입',expense_by_cat:'📊 카테고리별 지출',
-    close_title:'🔒 월 마감',close_desc:'현재 월을 마감하고 새 달을 시작합니다.',close_btn:'🔒 이번 달 마감',
-    settings_title:'⚙️ Google Sheets 설정',
-    setup_desc:'Google Apps Script URL을 입력하면 Google Sheets에 자동으로 데이터가 저장됩니다.',
-    no_api:'API URL 미설정',api_ok:'Google Sheets 연결됨 ✅',
-    api_url_label:'Google Apps Script Web App URL',save_url:'💾 URL 저장',test_btn:'🔗 테스트',
-    pending_label:'동기화 대기',sync_all:'🔄 모두 동기화',
-    month_mgmt:'📁 월 관리',month_mgmt_desc:'현재 활성 월',
-    danger_zone:'⚠️ 데이터 초기화',clear_desc:'기기의 모든 데이터 삭제 (Sheets 데이터는 유지)',clear_all:'🗑️ 전체 삭제',
-    saved:'저장되었습니다 ✅',deleted:'삭제되었습니다',synced_ok:'Sheets 동기화 완료 ✅',
-    sync_failed:'동기화 실패 — 나중에 재시도합니다',
-    confirm_close:'월 마감 확인',confirm_close_body:'이번 달 데이터가 기록에 저장되고 새 달이 시작됩니다.',
-    confirm_delete:'삭제하시겠습니까?',confirm_delete_body:'이 항목은 영구적으로 삭제됩니다.',
-    confirm_clear:'전체 삭제 확인',confirm_clear_body:'기기의 모든 데이터가 삭제됩니다.',
-    cancel:'취소',confirm:'확인',month_closed:'월 마감 완료 ✅',
-    cur_month:'현재 월',history_lbl:'이전 기록 보기',
-    no_income:'수입 내역 없음',no_expense:'지출 내역 없음',no_data:'데이터 없음',
-    img_ok:'이미지 압축 완료 ✅',
-    profit_lbl:'순이익',loss_lbl:'순손실',
-    active_month_lbl:'활성 월',
-    test_ok:'연결 성공 ✅',test_fail:'연결 실패 — URL을 확인하세요',
-    sync_done:'전체 동기화 완료 ✅',
-    bills_u:'영수증',cust_u:'고객',
-    cleared:'초기화 완료',
-  }
+const API = 'https://script.google.com/macros/s/AKfycbwb7On8RKyFD3FTSkjz5S_61rjmxiobsms_4HJmdOjPMNm-s38tsskWYznEJEzhzoic/exec';
+
+// เวลาเกาหลี KST (UTC+9)
+function nowKST(){
+  const kst=new Date(Date.now()+(9*3600000));
+  const y=kst.getUTCFullYear();
+  const mo=String(kst.getUTCMonth()+1).padStart(2,'0');
+  const d=String(kst.getUTCDate()).padStart(2,'0');
+  const h=String(kst.getUTCHours()).padStart(2,'0');
+  const mi=String(kst.getUTCMinutes()).padStart(2,'0');
+  const s=String(kst.getUTCSeconds()).padStart(2,'0');
+  return `${y}-${mo}-${d} ${h}:${mi}:${s}`;
+}
+function todayKST(){
+  const kst=new Date(Date.now()+(9*3600000));
+  return `${kst.getUTCFullYear()}-${String(kst.getUTCMonth()+1).padStart(2,'0')}-${String(kst.getUTCDate()).padStart(2,'0')}`;
+}
+function timeKST(){
+  const kst=new Date(Date.now()+(9*3600000));
+  return `${String(kst.getUTCHours()).padStart(2,'0')}:${String(kst.getUTCMinutes()).padStart(2,'0')}`;
+}
+
+let lang='th';
+const T={
+  th:{tabInc:'รายรับ',tabExp:'รายจ่าย',tabHis:'ประวัติ',incTitle:'บันทึกรายรับประจำวัน',incSub:'กรอกยอดขายแต่ละช่องทาง',expTitle:'บันทึกรายจ่าย',expSub:'กรอกทุกครั้งที่มีการซื้อของ',hisTitle:'ประวัติการบันทึก',hisSub:'รายการที่บันทึกในเซสชันนี้',date:'วันที่',channels:'ช่องทางการขาย',cash:'เงินสด',credit:'บัตร',other:'อื่นๆ',extra:'ข้อมูลเพิ่มเติม',tax:'ภาษี VAT',bills:'จำนวนบิล',customers:'จำนวนลูกค้า',total:'💰 ยอดรวมทั้งหมด',btnInc:'บันทึกรายรับ',btnExp:'บันทึกรายจ่าย',recentInc:'📝 รายรับที่บันทึกแล้ว',recentExp:'📝 รายจ่ายที่บันทึกแล้ว',expDate:'วันที่',expTime:'เวลา',buyer:'ผู้ซื้อ',buyerPh:'ชื่อคนที่ซื้อของ',cat:'หมวดหมู่',catDef:'-- เลือกหมวดหมู่ --',details:'รายละเอียด',detailsPh:'เช่น หมูสามชั้น 2kg...',amount:'จำนวนเงิน (วอน)',img:'รูปบิล',opt:'(ไม่บังคับ)',tap:'แตะเพื่อถ่ายรูปหรือเลือกรูปบิล',tapSub:'รูปจะถูกบีบอัดและบันทึกลง Google Drive อัตโนมัติ',remove:'ลบรูป',loading:'กำลังบันทึก...',loadingImg:'กำลังอัปโหลดรูป...',saved:'✅ บันทึกเข้า Google Sheets แล้ว!',savedImg:'✅ บันทึกพร้อมรูปบิลแล้ว!',error:'❌ เชื่อมต่อไม่ได้ กรุณาลองใหม่',fill:'⚠️ กรุณากรอกข้อมูลให้ครบ',noData:'ยังไม่มีรายการ',langBtn:'한국어'},
+  ko:{tabInc:'매출',tabExp:'지출',tabHis:'내역',incTitle:'일일 매출 입력',incSub:'채널별 매출을 입력하세요',expTitle:'지출 입력',expSub:'구매할 때마다 입력하세요',hisTitle:'입력 내역',hisSub:'이 세션에서 입력한 내역',date:'날짜',channels:'판매 채널',cash:'현금',credit:'카드',other:'기타',extra:'추가 정보',tax:'부가세',bills:'영수증 수',customers:'손님 수',total:'💰 총 매출',btnInc:'매출 저장',btnExp:'지출 저장',recentInc:'📝 저장된 매출 내역',recentExp:'📝 저장된 지출 내역',expDate:'날짜',expTime:'시간',buyer:'구매자',buyerPh:'구매자 이름 입력',cat:'카테고리',catDef:'-- 카테고리 선택 --',details:'상세 내용',detailsPh:'예: 삼겹살 2kg...',amount:'금액 (원)',img:'영수증 사진',opt:'(선택)',tap:'탭하여 영수증 촬영 또는 선택',tapSub:'사진은 Google Drive에 자동 저장됩니다',remove:'사진 삭제',loading:'저장 중...',loadingImg:'사진 업로드 중...',saved:'✅ Google Sheets에 저장되었습니다!',savedImg:'✅ 영수증 사진과 함께 저장되었습니다!',error:'❌ 연결 오류. 다시 시도해주세요.',fill:'⚠️ 필수 항목을 모두 입력해주세요.',noData:'내역 없음',langBtn:'ภาษาไทย'}
 };
-// ==================== STATE ====================
-const SK={INC:'v2_inc',EXP:'v2_exp',CLOSED:'v2_closed',AM:'v2_am',LANG:'v2_lang',API:'v2_api'};
-let lang=localStorage.getItem(SK.LANG)||'th';
-let period='month';
-let pendingImg=null;
-// ==================== HELPERS ====================
-function t(k){return(TR[lang]&&TR[lang][k])||TR.th[k]||k}
-function num(n){return Math.round(n||0).toLocaleString()}
-function p2(n){return String(n).padStart(2,'0')}
-function today(){const d=new Date();return fd(d)}
-function fd(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
-function nowDT(){const d=new Date();return fd(d)+'T'+p2(d.getHours())+':'+p2(d.getMinutes())}
-function moOf(s){return s?s.substring(0,7):''}
-// ==================== STORAGE ====================
-function gD(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}}
-function sD(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast('⚠️ Storage full');return false}}
-function getIncome(){return gD(SK.INC)}
-function getExpenses(){return gD(SK.EXP)}
-function getClosed(){return gD(SK.CLOSED)}
-function getAM(){return localStorage.getItem(SK.AM)||(()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)})()}
-function setAM(m){localStorage.setItem(SK.AM,m)}
-function getApi(){return localStorage.getItem(SK.API)||''}
-// ==================== LANGUAGE ====================
-function toggleLang(){lang=lang==='th'?'ko':'th';localStorage.setItem(SK.LANG,lang);applyLang()}
+const t=k=>T[lang][k]||k;
+
+function toggleLang(){lang=lang==='th'?'ko':'th';applyLang();}
 function applyLang(){
-  document.getElementById('lbtn').textContent=lang==='th'?'한국어':'ภาษาไทย';
-  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.getAttribute('data-i18n')));
-  document.querySelectorAll('[data-iph]').forEach(el=>el.placeholder=t(el.getAttribute('data-iph')));
-  document.querySelectorAll('option[data-i18n]').forEach(el=>el.textContent=t(el.getAttribute('data-i18n')));
-  updateBadge();renderIncList();renderExpList();
-  if(document.getElementById('pg-settings').classList.contains('active'))updateSettings();
-  if(document.getElementById('pg-summary').classList.contains('active'))renderSummary();
+  const m={'tab-inc-label':'tabInc','tab-exp-label':'tabExp','tab-his-label':'tabHis','inc-title':'incTitle','inc-sub':'incSub','exp-title':'expTitle','exp-sub':'expSub','his-title':'hisTitle','his-sub':'hisSub','lbl-date':'date','lbl-channels':'channels','lbl-cash':'cash','lbl-credit':'credit','lbl-other':'other','lbl-extra':'extra','lbl-tax':'tax','lbl-bills':'bills','lbl-customers':'customers','lbl-total':'total','btn-inc-label':'btnInc','btn-exp-label':'btnExp','lbl-recent-inc':'recentInc','lbl-recent-exp':'recentExp','lbl-exp-date':'expDate','lbl-exp-time':'expTime','lbl-buyer':'buyer','lbl-cat':'cat','lbl-details':'details','lbl-amount':'amount','lbl-img':'img','lbl-opt':'opt','lbl-tap':'tap','lbl-tap-sub':'tapSub','lbl-remove':'remove','loading-text':'loading','lang-btn':'langBtn','empty-inc':'noData','empty-exp':'noData'};
+  Object.entries(m).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.textContent=t(k);});
+  document.getElementById('exp-buyer').placeholder=t('buyerPh');
+  document.getElementById('exp-details').placeholder=t('detailsPh');
+  document.getElementById('exp-cat').options[0].text=t('catDef');
 }
-// ==================== NAV ====================
-function showPage(p){
-  document.querySelectorAll('.pg').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(el=>el.classList.remove('active'));
-  document.getElementById('pg-'+p).classList.add('active');
-  document.querySelector('[data-pg="'+p+'"]').classList.add('active');
-  if(p==='summary'){populateMSel();renderSummary()}
-  if(p==='settings')updateSettings();
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='history')renderHistory();
 }
-// ==================== TOAST ====================
-function toast(msg,dur=2500){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),dur);
+
+function calcTotal(){
+  const ids=['inc-cash','inc-credit','inc-baemin','inc-yogiyo','inc-coupang','inc-other'];
+  const sum=ids.reduce((a,id)=>a+(parseFloat(document.getElementById(id).value)||0),0);
+  document.getElementById('total-display').textContent=sum.toLocaleString('ko-KR');
+  return sum;
 }
-// ==================== MODAL ====================
-function showModal(title,body,onOk){
-  document.getElementById('m-title').textContent=title;
-  document.getElementById('m-body').textContent=body;
-  document.getElementById('m-ok').onclick=()=>{onOk();closeModal()};
-  document.getElementById('mov').classList.add('show');
+
+function previewImg(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('img-preview');
+    img.src=e.target.result;img.style.display='block';
+    document.getElementById('img-ph').style.display='none';
+    document.getElementById('img-remove-btn').style.display='block';
+  };
+  reader.readAsDataURL(file);
 }
-function closeModal(){document.getElementById('mov').classList.remove('show')}
-// ==================== SYNC STATUS ====================
-function setSyncDot(state){
-  const d=document.getElementById('sdot');
-  d.className='sync-dot';
-  if(state!=='ok')d.classList.add(state);
+
+function removeImg(){
+  document.getElementById('bill-img').value='';
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-preview').src='';
+  document.getElementById('img-ph').style.display='block';
+  document.getElementById('img-remove-btn').style.display='none';
 }
-function updateBadge(){
-  document.getElementById('mbadge').textContent=t('active_month_lbl')+': '+getAM();
-  updatePendingCount();
-}
-function updatePendingCount(){
-  const pi=getIncome().filter(r=>!r.synced).length;
-  const pe=getExpenses().filter(r=>!r.synced).length;
-  const tot=pi+pe;
-  const el=document.getElementById('pending-cnt-txt');
-  if(el)el.textContent=tot+' '+(lang==='th'?'รายการ':'건');
-  setSyncDot(tot>0?(getApi()?'pending':'error'):'ok');
-}
-// ==================== IMAGE ====================
-function handleImg(e){
-  const file=e.target.files[0];if(!file)return;
-  compressImg(file,700,0.6).then(b64=>{
-    pendingImg=b64;
-    const pv=document.getElementById('ipreview');
-    pv.src=b64;pv.style.display='block';
-    document.getElementById('iutxt').textContent='✅ '+t('img_ok');
-    document.getElementById('iua').classList.add('has');
-  });
-}
-function compressImg(file,maxW,q){
-  return new Promise(res=>{
-    const r=new FileReader();
-    r.onload=e2=>{
+
+function compressImg(file,maxW=1000){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
       const img=new Image();
       img.onload=()=>{
+        const c=document.createElement('canvas');
         let w=img.width,h=img.height;
-        if(w>maxW){h=Math.round((maxW/w)*h);w=maxW;}
-        const c=document.createElement('canvas');c.width=w;c.height=h;
+        if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+        c.width=w;c.height=h;
         c.getContext('2d').drawImage(img,0,0,w,h);
-        res(c.toDataURL('image/jpeg',q));
+        resolve(c.toDataURL('image/jpeg',0.75));
       };
-      img.src=e2.target.result;
+      img.src=e.target.result;
     };
-    r.readAsDataURL(file);
+    reader.readAsDataURL(file);
   });
 }
-function resetImg(){
-  pendingImg=null;
-  const pv=document.getElementById('ipreview');pv.src='';pv.style.display='none';
-  document.getElementById('iutxt').textContent=t('tap_upload');
-  document.getElementById('iua').classList.remove('has');
-  document.getElementById('biinput').value='';
+
+// ส่งข้อมูลไม่มีรูป → GET (เร็ว ไม่มีปัญหา CORS)
+async function sendGet(payload){
+  const url=API+'?data='+encodeURIComponent(JSON.stringify(payload));
+  const res=await fetch(url);
+  const text=await res.text();
+  try{return JSON.parse(text);}catch(e){return {success:true};}
 }
-function viewImg(src){document.getElementById('ivimg').src=src;document.getElementById('ivov').classList.add('show')}
-function closeIV(){document.getElementById('ivov').classList.remove('show')}
-// ==================== GOOGLE SHEETS SYNC ====================
-async function syncRecord(type,rec){
-  const url=getApi();if(!url)return false;
-  const payload={action:type==='income'?'saveIncome':'saveExpense',...rec};
-  // Remove large image from payload if over ~80KB
-  if(payload.image&&payload.image.length>110000)payload.image='[too large - stored locally]';
+
+// ส่งข้อมูลมีรูป → POST (รองรับ base64 ขนาดใหญ่)
+async function sendPost(payload){
+  const res=await fetch(API,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify(payload)
+  });
+  const text=await res.text();
+  try{return JSON.parse(text);}catch(e){return {success:true};}
+}
+
+const hist=[];
+function addHist(type,data){hist.unshift({type,data,ts:nowKST()});}
+
+function hiCard(h){
+  if(h.type==='income'){
+    return`<div class="hi-item"><div class="hi-ico inc">💰</div><div class="hi-body"><div class="hi-title">${h.data.date} <span class="badge inc">รายรับ</span></div><div class="hi-meta">👥 ${h.data.customers||0} คน · 🧾 ${h.data.bills||0} บิล</div></div><div class="hi-right"><div class="hi-amount inc">₩${Number(h.data.total).toLocaleString('ko-KR')}</div><div class="hi-time">${h.ts}</div></div></div>`;
+  }
+  return`<div class="hi-item"><div class="hi-ico exp">🛒</div><div class="hi-body"><div class="hi-title">${h.data.details} <span class="badge exp">รายจ่าย</span></div><div class="hi-meta">👤 ${h.data.buyer} · 📂 ${h.data.cat}${h.hasImg?' · 📸 มีบิล':''}</div></div><div class="hi-right"><div class="hi-amount exp">₩${Number(h.data.amount).toLocaleString('ko-KR')}</div><div class="hi-time">${h.ts}</div></div></div>`;
+}
+
+function renderHistory(){
+  const el=document.getElementById('history-list');
+  el.innerHTML=hist.length?hist.map(hiCard).join(''):`<div class="empty-state"><div class="ei">📭</div><p>${t('noData')}</p></div>`;
+}
+function renderList(id,type,emptyId){
+  const el=document.getElementById(id);
+  const items=hist.filter(h=>h.type===type);
+  el.innerHTML=items.length?items.slice(0,5).map(hiCard).join(''):`<div class="empty-state"><div class="ei">📭</div><p id="${emptyId}">${t('noData')}</p></div>`;
+}
+function showToast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+type;
+  setTimeout(()=>{el.className='toast';},4000);
+}
+function setLoading(show,msg){
+  document.getElementById('loading').className=show?'loading show':'loading';
+  if(msg)document.getElementById('loading-text').textContent=msg;
+}
+
+async function submitIncome(){
+  const date=document.getElementById('income-date').value;
+  if(!date){showToast(t('fill'),'error');return;}
+  const total=calcTotal();
+  const data={action:'saveIncome',id:'INC_'+Date.now(),date,
+    cash:parseFloat(document.getElementById('inc-cash').value)||0,
+    credit:parseFloat(document.getElementById('inc-credit').value)||0,
+    baemin:parseFloat(document.getElementById('inc-baemin').value)||0,
+    yogiyo:parseFloat(document.getElementById('inc-yogiyo').value)||0,
+    coupang:parseFloat(document.getElementById('inc-coupang').value)||0,
+    other:parseFloat(document.getElementById('inc-other').value)||0,
+    tax:parseFloat(document.getElementById('inc-tax').value)||0,
+    bills:parseFloat(document.getElementById('inc-bills').value)||0,
+    customers:parseFloat(document.getElementById('inc-customers').value)||0,
+    total, recordedAt:nowKST()};
+  setLoading(true,t('loading'));
+  document.getElementById('btn-inc').disabled=true;
   try{
-    const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
-    const result=await resp.json();
-    return result&&result.success===true;
-  }catch(e){return false;}
+    const res=await sendGet(data);
+    if(res.success){
+      addHist('income',data);
+      renderList('income-list','income','empty-inc');
+      showToast(t('saved'),'success');
+      ['inc-cash','inc-credit','inc-baemin','inc-yogiyo','inc-coupang','inc-other','inc-tax','inc-bills','inc-customers'].forEach(id=>document.getElementById(id).value='');
+      calcTotal();
+    }else{showToast(t('error'),'error');}
+  }catch(e){showToast(t('error'),'error');}
+  finally{setLoading(false);document.getElementById('btn-inc').disabled=false;}
 }
-async function syncAll(){
-  const url=getApi();
-  if(!url){toast('⚠️ ยังไม่ได้ตั้งค่า API URL');return;}
-  setSyncDot('syncing');toast(lang==='th'?'กำลังซิงค์...':'동기화 중...',8000);
-  const inc=getIncome();const exp=getExpenses();
-  let ok=0,fail=0;
-  for(const r of inc){
-    if(!r.synced){
-      const s=await syncRecord('income',r);
-      if(s){r.synced=true;ok++;}else fail++;
-    }
+
+async function submitExpense(){
+  const date=document.getElementById('exp-date').value;
+  const buyer=document.getElementById('exp-buyer').value.trim();
+  const cat=document.getElementById('exp-cat').value;
+  const details=document.getElementById('exp-details').value.trim();
+  const amount=parseFloat(document.getElementById('exp-amount').value)||0;
+  if(!date||!buyer||!cat||!details||!amount){showToast(t('fill'),'error');return;}
+
+  const file=document.getElementById('bill-img').files[0];
+  let image='';
+  let hasImg=false;
+
+  if(file){
+    setLoading(true,t('loadingImg'));
+    try{image=await compressImg(file);hasImg=true;}catch(e){image='';}
   }
-  sD(SK.INC,inc);
-  for(const r of exp){
-    if(!r.synced){
-      const s=await syncRecord('expense',r);
-      if(s){r.synced=true;ok++;}else fail++;
-    }
-  }
-  sD(SK.EXP,exp);
-  if(fail===0)toast(t('sync_done'));
-  else toast('✅ '+ok+' / ⚠️ '+fail);
-  updateBadge();renderIncList();renderExpList();
-}
-async function testApi(){
-  const url=document.getElementById('api-url-inp').value.trim();
-  if(!url){toast('⚠️ กรุณากรอก URL');return;}
-  toast(lang==='th'?'กำลังทดสอบ...':'테스트 중...',5000);
+
+  const data={action:'saveExpense',id:'EXP_'+Date.now(),date,
+    time:document.getElementById('exp-time').value,
+    buyer,cat,details,amount,
+    image:image,
+    recordedAt:nowKST()};
+
+  setLoading(true,t('loading'));
+  document.getElementById('btn-exp').disabled=true;
   try{
-    const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'ping'})});
-    const r=await resp.json();
-    if(r.success||r.status==='ok')toast(t('test_ok'));
-    else toast(t('test_fail'));
-  }catch(e){toast(t('test_fail'));}
+    // มีรูปใช้ POST, ไม่มีรูปใช้ GET
+    const res = hasImg ? await sendPost(data) : await sendGet(data);
+    if(res.success){
+      hist.unshift({type:'expense',data,hasImg,ts:nowKST()});
+      renderList('expense-list','expense','empty-exp');
+      showToast(hasImg?t('savedImg'):t('saved'),'success');
+      ['exp-buyer','exp-details','exp-amount'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('exp-cat').value='';
+      removeImg();
+    }else{showToast(t('error'),'error');}
+  }catch(e){showToast(t('error'),'error');}
+  finally{setLoading(false);document.getElementById('btn-exp').disabled=false;}
 }
-function saveApiUrl(){
-  const url=document.getElementById('api-url-inp').value.trim();
-  localStorage.setItem(SK.API,url);
-  updateSettings();
-  toast(t('saved'));
-  if(url)syncAll();
-}
-function updateSettings(){
-  const url=getApi();
-  const inp=document.getElementById('api-url-inp');
-  if(inp&&!inp.value)inp.value=url;
-  const bar=document.getElementById('api-status-bar');
-  const txt=document.getElementById('api-status-txt');
-  if(bar&&txt){
-    if(url){bar.className='api-status ok';txt.textContent=t('api_ok');}
-    else{bar.className='api-status no';txt.textContent=t('no_api');}
-  }
-  const amd=document.getElementById('active-month-disp');
-  if(amd)amd.textContent=getAM();
-  updatePendingCount();
-}
-// ==================== INCOME ====================
-function saveIncome(){
-  const date=document.getElementById('id').value;
-  if(!date){toast('⚠️ '+t('date'));return;}
-  const total=parseFloat(document.getElementById('it').value)||0;
-  if(total<=0){toast('⚠️ '+t('total_sales'));return;}
-  const rec={
-    id:Date.now().toString(),
-    date,month:moOf(date),total,
-    cash:parseFloat(document.getElementById('ic-cash').value)||0,
-    credit:parseFloat(document.getElementById('ic-credit').value)||0,
-    baemin:parseFloat(document.getElementById('ic-baemin').value)||0,
-    yogiyo:parseFloat(document.getElementById('ic-yogiyo').value)||0,
-    coupang:parseFloat(document.getElementById('ic-coupang').value)||0,
-    other:parseFloat(document.getElementById('ic-other').value)||0,
-    tax:parseFloat(document.getElementById('i-tax').value)||0,
-    bills:parseInt(document.getElementById('i-bills').value)||0,
-    customers:parseInt(document.getElementById('i-cust').value)||0,
-    synced:false
-  };
-  const inc=getIncome();inc.push(rec);
-  if(!sD(SK.INC,inc))return;
-  ['it','ic-cash','ic-credit','ic-baemin','ic-yogiyo','ic-coupang','ic-other','i-tax','i-bills','i-cust'].forEach(x=>document.getElementById(x).value='');
-  toast(t('saved'));renderIncList();updateBadge();
-  syncRecord('income',rec).then(ok=>{
-    if(ok){
-      const all=getIncome();const r=all.find(x=>x.id===rec.id);if(r){r.synced=true;sD(SK.INC,all);}
-      toast(t('synced_ok'));updateBadge();renderIncList();
-    }else if(getApi()){toast(t('sync_failed'));}
-  });
-}
-function catLbl(c){
-  const m={kitchen:t('cat_kitchen'),bar:t('cat_bar'),labor:t('cat_labor'),utilities:t('cat_utilities'),delivery:t('cat_delivery'),other:t('cat_other')};
-  return m[c]||c;
-}
-function renderIncList(){
-  const el=document.getElementById('inc-list');
-  const am=getAM();
-  const list=getIncome().filter(r=>r.month===am).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20);
-  if(!list.length){el.innerHTML=`<div class="empty"><div class="eic">💚</div><div class="etx">${t('no_income')}</div></div>`;return;}
-  el.innerHTML=list.map(r=>`<div class="ri">
-    <button class="rdel" onclick="delIncome('${r.id}')">✕</button>
-    <div class="rd">${r.date} ${r.synced?'<span class="synced-ic">☁️</span>':'<span class="pending-ic">🕐</span>'}</div>
-    <div class="ra">${num(r.total)} ₩</div>
-    <div class="rm"><span class="chip i">💵 ${num(r.cash)}</span> <span class="chip i">💳 ${num(r.credit)}</span> <span class="chip i">🛵 ${num(r.baemin+r.yogiyo+r.coupang)}</span></div>
-    <div class="rm">📋 ${r.bills} ${t('bills_u')} &nbsp;·&nbsp; 👥 ${r.customers} ${t('cust_u')}</div>
-  </div>`).join('');
-}
-function delIncome(id){
-  showModal(t('confirm_delete'),t('confirm_delete_body'),()=>{
-    sD(SK.INC,getIncome().filter(r=>r.id!==id));
-    toast(t('deleted'));renderIncList();updateBadge();
-  });
-}
-// ==================== EXPENSE ====================
-function saveExpense(){
-  const dt=document.getElementById('e-dt').value;
-  if(!dt){toast('⚠️ '+t('datetime'));return;}
-  const amount=parseFloat(document.getElementById('e-amt').value)||0;
-  if(amount<=0){toast('⚠️ '+t('amount'));return;}
-  const date=dt.substring(0,10);
-  const rec={
-    id:Date.now().toString(),
-    datetime:dt,date,time:dt.substring(11,16),month:moOf(date),
-    buyer:document.getElementById('e-buyer').value.trim(),
-    cat:document.getElementById('e-cat').value,
-    details:document.getElementById('e-det').value.trim(),
-    amount,image:pendingImg||null,synced:false
-  };
-  const exp=getExpenses();exp.push(rec);
-  if(!sD(SK.EXP,exp))return;
-  ['e-buyer','e-det','e-amt'].forEach(x=>document.getElementById(x).value='');
-  resetImg();
-  toast(t('saved'));renderExpList();updateBadge();
-  syncRecord('expense',rec).then(ok=>{
-    if(ok){
-      const all=getExpenses();const r=all.find(x=>x.id===rec.id);if(r){r.synced=true;sD(SK.EXP,all);}
-      toast(t('synced_ok'));updateBadge();renderExpList();
-    }else if(getApi()){toast(t('sync_failed'));}
-  });
-}
-function renderExpList(){
-  const el=document.getElementById('exp-list');
-  const am=getAM();
-  const list=getExpenses().filter(r=>r.month===am).sort((a,b)=>b.datetime.localeCompare(a.datetime)).slice(0,20);
-  if(!list.length){el.innerHTML=`<div class="empty"><div class="eic">🧾</div><div class="etx">${t('no_expense')}</div></div>`;return;}
-  el.innerHTML=list.map(r=>`<div class="ri e">
-    <button class="rdel" onclick="delExpense('${r.id}')">✕</button>
-    <div class="rd">${r.datetime.replace('T',' ')} ${r.synced?'<span class="synced-ic">☁️</span>':'<span class="pending-ic">🕐</span>'}</div>
-    <div class="ra e">${num(r.amount)} ₩</div>
-    <div class="rm"><span class="chip">${catLbl(r.cat)}</span>${r.buyer?' &nbsp;·&nbsp; '+r.buyer:''}</div>
-    ${r.details?`<div class="rm">${r.details}</div>`:''}
-    ${r.image?`<img class="rimg" src="${r.image}" onclick="viewImg('${r.image}')" alt="">`:''}
-  </div>`).join('');
-}
-function delExpense(id){
-  showModal(t('confirm_delete'),t('confirm_delete_body'),()=>{
-    sD(SK.EXP,getExpenses().filter(r=>r.id!==id));
-    toast(t('deleted'));renderExpList();updateBadge();
-  });
-}
-// ==================== SUMMARY ====================
-function setPeriod(p){
-  period=p;
-  document.querySelectorAll('.ptab').forEach(el=>el.classList.remove('active'));
-  document.querySelector('[data-p="'+p+'"]').classList.add('active');
-  renderSummary();
-}
-function populateMSel(){
-  const sel=document.getElementById('msel');const am=getAM();
-  const all=new Set([am]);
-  getIncome().forEach(r=>all.add(r.month));
-  getExpenses().forEach(r=>all.add(r.month));
-  getClosed().forEach(c=>all.add(c.month));
-  const sorted=[...all].filter(Boolean).sort().reverse();
-  const cur=sel.value||am;
-  sel.innerHTML=sorted.map(m=>`<option value="${m}"${m===cur?' selected':''}>${m}${m===am?' ('+t('cur_month')+')':''}</option>`).join('');
-}
-function getDR(){
-  const now=new Date();
-  if(period==='day'){
-    const s=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-    const e=new Date(s);e.setDate(e.getDate()+1);
-    return{s,e,lbl:fd(s)};
-  }
-  if(period==='week'){
-    const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);
-    const s=new Date(now.getFullYear(),now.getMonth(),diff);
-    const e=new Date(s);e.setDate(e.getDate()+7);
-    const ed=new Date(e);ed.setDate(ed.getDate()-1);
-    return{s,e,lbl:fd(s)+' – '+fd(ed)};
-  }
-  const selM=(document.getElementById('msel')?document.getElementById('msel').value:null)||getAM();
-  const[y,m]=selM.split('-').map(Number);
-  return{s:new Date(y,m-1,1),e:new Date(y,m,1),lbl:selM};
-}
-function filterRecs(recs,df='date'){
-  const{s,e}=getDR();const selM=(document.getElementById('msel')?document.getElementById('msel').value:null)||getAM();
-  if(period==='month')return recs.filter(r=>r.month===selM);
-  return recs.filter(r=>{const d=new Date((r[df]||'').substring(0,10));return d>=s&&d<e;});
-}
-function renderSummary(){
-  const selM=(document.getElementById('msel')?document.getElementById('msel').value:null)||getAM();
-  const am=getAM();const isH=selM!==am;
-  document.getElementById('close-card').style.display=isH?'none':'block';
-  let iData,eData;
-  if(isH){
-    const cl=getClosed().find(c=>c.month===selM);
-    iData=cl?cl.income:[];eData=cl?cl.expenses:[];
-  }else{iData=getIncome();eData=getExpenses();}
-  const fi=filterRecs(iData,'date');
-  const fe=filterRecs(eData,'datetime');
-  const tI=fi.reduce((s,r)=>s+(r.total||0),0);
-  const tE=fe.reduce((s,r)=>s+(r.amount||0),0);
-  const net=tI-tE;const isP=net>=0;
-  const ch={
-    cash:fi.reduce((s,r)=>s+(r.cash||0),0),
-    credit:fi.reduce((s,r)=>s+(r.credit||0),0),
-    baemin:fi.reduce((s,r)=>s+(r.baemin||0),0),
-    yogiyo:fi.reduce((s,r)=>s+(r.yogiyo||0),0),
-    coupang:fi.reduce((s,r)=>s+(r.coupang||0),0),
-    other:fi.reduce((s,r)=>s+(r.other||0),0)
-  };
-  const cats={};fe.forEach(r=>{cats[r.cat]=(cats[r.cat]||0)+r.amount;});
-  const maxCh=Math.max(1,...Object.values(ch));
-  const maxCat=Math.max(1,...Object.values(cats));
-  const{lbl}=getDR();document.getElementById('rdisp').textContent=lbl;
-  const chMap={cash:`💵 ${t('cash')}`,credit:`💳 ${t('credit')}`,baemin:'🛵 Baemin 배민',yogiyo:'🛵 Yogiyo 요기요',coupang:'🛵 Coupang Eats',other:`📦 ${t('other')}`};
-  const chRows=Object.entries(chMap).map(([k,lb])=>{
-    const v=ch[k];if(!v)return'';
-    const pct=Math.round((v/maxCh)*100);
-    return`<div class="bki"><div style="flex:1;min-width:0"><div class="bkl">${lb}</div><div class="bkbar"><div class="bkbf" style="width:${pct}%;background:linear-gradient(to right,#43A047,#81C784)"></div></div></div><div class="bkv" style="color:#2E7D32;margin-left:10px">${num(v)} ₩</div></div>`;
-  }).join('');
-  const catRows=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{
-    const pct=Math.round((v/maxCat)*100);
-    return`<div class="bki"><div style="flex:1;min-width:0"><div class="bkl">${catLbl(c)}</div><div class="bkbar"><div class="bkbf" style="width:${pct}%"></div></div></div><div class="bkv" style="color:#C62828;margin-left:10px">${num(v)} ₩</div></div>`;
-  }).join('');
-  document.getElementById('sum-content').innerHTML=`
-    ${isH?`<div class="hbg">📁 ${t('history_lbl')}: ${selM}</div>`:''}
-    <div class="pb ${isP?'pos':'neg'}">
-      <div class="pvlb">${isP?t('profit_lbl'):t('loss_lbl')}</div>
-      <div class="pv ${isP?'pos':'neg'}">${isP?'+':''}${num(net)} ₩</div>
-    </div>
-    <div class="sg">
-      <div class="sc"><div class="sl">${t('total_income')}</div><div class="sv ic">${num(tI)}</div><div class="sunit">₩</div></div>
-      <div class="sc"><div class="sl">${t('total_expense')}</div><div class="sv ec">${num(tE)}</div><div class="sunit">₩</div></div>
-    </div>
-    <div class="card"><div class="ct">${t('income_by_ch')}</div>${chRows||`<div class="empty" style="padding:14px"><div class="eic">💚</div><div class="etx">${t('no_data')}</div></div>`}</div>
-    <div class="card"><div class="ct">${t('expense_by_cat')}</div>${catRows||`<div class="empty" style="padding:14px"><div class="eic">🧾</div><div class="etx">${t('no_data')}</div></div>`}</div>`;
-}
-// ==================== CLOSE MONTH ====================
-function confirmClose(){
-  showModal(t('confirm_close'),t('confirm_close_body'),doClose);
-}
-function doClose(){
-  const am=getAM();
-  const inc=getIncome().filter(r=>r.month===am);
-  const exp=getExpenses().filter(r=>r.month===am);
-  const cl=getClosed().filter(c=>c.month!==am);
-  cl.push({month:am,closedAt:new Date().toISOString(),income:inc,expenses:exp});
-  sD(SK.CLOSED,cl);
-  sD(SK.INC,getIncome().filter(r=>r.month!==am));
-  sD(SK.EXP,getExpenses().filter(r=>r.month!==am));
-  const[y,m]=am.split('-').map(Number);
-  const nx=new Date(y,m,1);
-  setAM(nx.getFullYear()+'-'+p2(nx.getMonth()+1));
-  toast(t('month_closed'));
-  updateBadge();populateMSel();renderSummary();renderIncList();renderExpList();
-  if(document.getElementById('pg-settings').classList.contains('active'))updateSettings();
-}
-// ==================== CLEAR ALL ====================
-function confirmClearAll(){
-  showModal(t('confirm_clear'),t('confirm_clear_body'),()=>{
-    [SK.INC,SK.EXP,SK.CLOSED,SK.AM].forEach(k=>localStorage.removeItem(k));
-    toast(t('cleared'));
-    updateBadge();renderIncList();renderExpList();
-    if(document.getElementById('pg-settings').classList.contains('active'))updateSettings();
-  });
-}
-// ==================== INIT ====================
+
 function init(){
-  document.getElementById('id').value=today();
-  document.getElementById('e-dt').value=nowDT();
+  document.getElementById('income-date').value=todayKST();
+  document.getElementById('exp-date').value=todayKST();
+  document.getElementById('exp-time').value=timeKST();
   applyLang();
 }
 init();
